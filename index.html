@@ -5,11 +5,20 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>Cards Against Assembly™</title>
         <link rel="stylesheet" href="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/css/bootstrap.css">
+        <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="styles/style.css">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular.min.js"></script>
+        <script src="bower_components/angular/angular.min.js"></script>
+        <script src="bower_components/angular-animate/angular-animate.min.js"></script>
+        <script src="bower_components/angular-sanitize/angular-sanitize.min.js"></script>
+        <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+
         <script src="scripts/app.js"></script>
         <script src="scripts/controllers/cardsController.js"></script>
+        <script src="scripts/directives/card.js"></script>
+        <script src="scripts/controllers/rateController.js"></script>
+        <script src='scripts/controllers/alertsController.js'></script>
+
     </head>
     <body>
       <div class="container">
@@ -23,14 +32,31 @@
           <div class="row">
 
             <div class="col-sm-6 col-md-6 col-lg-4" ng-repeat="card in cardsCtrl.questionsList" >
-              <div class="card">
-                <h4 class="card-title">{{card.question}}</h4>
-                <h6>Cards Against Assembly</h6>
-              </div>
+              <wdi-card question="{{card.question}}"></wdi-card>
             </div>
 
           </div>
+          <wdi-card question="What question should we ask?"></wdi-card>
         </section>
+
+        <section ng-controller="rateController as rateCtrl">
+          <h2>Rate our app!</h2>
+          <span uib-rating ng-model="rateCtrl.rate" max="rateCtrl.max" read-only="rateCtrl.isReadonly" on-hover="rateCtrl.hoveringOver(value)" on-leave="rateCtrl.overStar = null" titles="['one','two','three']" aria-labelledby="default-rating"></span>
+          <span class="label" ng-class="{'label-warning': rateCtrl.percent<30, 'label-info': rateCtrl.percent>=30 && rateCtrl.percent<70, 'label-success': rateCtrl.percent>=70}" ng-show="rateCtrl.overStar && !rateCtrl.isReadonly">{{rateCtrl.percent}}%</span>
+        </section>
+
+        <div ng-controller="alertsController as alertsCtrl">
+          <script type="text/ng-template" id="alert.html">
+            <div ng-transclude></div>
+          </script>
+
+          <div uib-alert ng-repeat="alert in alertsCtrl.alerts" ng-class="'alert-' + (alert.type || 'warning')" close="alertsCtrl.closeAlert($index)">{{alert.msg}}</div>
+          <div class="form-group">
+            <input type='text' ng-model='alertsCtrl.newAlert' class="form-control input-md" required="">
+            <button type="button" class='btn btn-default' ng-click="alertsCtrl.addAlert()">Add Alert</button>
+          </div>
+        </div>
+
 
       <footer>
         <p>Made with <span class="heart">♥︎</span> at General Assembly</p>
